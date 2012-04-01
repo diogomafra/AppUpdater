@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <files>
+    <file name="TestApp.exe" checksum="AABBCC" size="1000" />
+    <file name="AppUpdater.dll" checksum="AABBCC" size="1000" />
+  </files>
+</manifest>

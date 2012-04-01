@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+  <version>1.2.3</version>
+  <updateServer>http://localhost/updates/</updateServer>
+  <executable>TestApp.exe</executable>
+</config>
