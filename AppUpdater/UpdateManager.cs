@@ -47,21 +47,11 @@ namespace AppUpdater
             this.CurrentVersion = localStructureManager.GetCurrentVersion();
         }
 
-        public bool CheckForUpdate(out UpdateInfo updateInfo)
+        public UpdateInfo CheckForUpdate()
         {
             string serverCurrentVersion = updateServer.GetCurrentVersion();
-
             bool hasUpdate = CurrentVersion != serverCurrentVersion;
-            if (!hasUpdate)
-            {
-                updateInfo = null;
-            }
-            else
-            {
-                updateInfo = new UpdateInfo(serverCurrentVersion);
-            }
-
-            return hasUpdate;
+            return new UpdateInfo(hasUpdate, serverCurrentVersion);
         }
 
         public void DoUpdate(UpdateInfo updateInfo)

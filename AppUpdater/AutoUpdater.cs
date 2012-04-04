@@ -54,8 +54,8 @@ namespace AppUpdater
                 try
                 {
                     log.Debug("Checking for updates.");
-                    UpdateInfo updateInfo;
-                    if (updateManager.CheckForUpdate(out updateInfo))
+                    UpdateInfo updateInfo = updateManager.CheckForUpdate();
+                    if (updateInfo.HasUpdate)
                     {
                         log.Debug("Updates found. Installing new files.");
                         updateManager.DoUpdate(updateInfo);

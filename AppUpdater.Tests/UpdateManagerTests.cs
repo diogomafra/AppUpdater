@@ -60,37 +60,43 @@ namespace AppUpdater.Tests
             }
 
             [Test]
-            public void CheckForUpdate_WithoutUpdate_ReturnsFalse()
+            public void CheckForUpdate_WithoutUpdate_HasUpdateIsFalse()
             {
                 updateServer.Stub(x => x.GetCurrentVersion()).Return(initialVersion);
 
-                UpdateInfo updateInfo;
-                bool hasUpdate = updateManager.CheckForUpdate(out updateInfo);
+                UpdateInfo updateInfo = updateManager.CheckForUpdate();
 
-                Assert.That(hasUpdate, Is.False);
+                Assert.That(updateInfo.HasUpdate, Is.False);
             }
 
             [Test]
-            public void CheckForUpdate_WithUpdate_ReturnsTrue()
+            public void CheckForUpdate_WithoutUpdate_ReturnsTheCurrentVersion()
+            {
+                updateServer.Stub(x => x.GetCurrentVersion()).Return(initialVersion);
+
+                UpdateInfo updateInfo = updateManager.CheckForUpdate();
+
+                Assert.That(updateInfo.Version, Is.EqualTo(initialVersion));
+            }
+
+            [Test]
+            public void CheckForUpdate_WithUpdate_HasUpdateIsTrue()
             {
                 updateServer.Stub(x => x.GetCurrentVersion()).Return("2.6.8");
 
-                UpdateInfo updateInfo;
-                bool hasUpdate = updateManager.CheckForUpdate(out updateInfo);
+                UpdateInfo updateInfo = updateManager.CheckForUpdate();
 
-                Assert.That(hasUpdate, Is.True);
+                Assert.That(updateInfo.HasUpdate, Is.True);
             }
 
             [Test]
-            public void CheckForUpdate_WithUpdate_ReturnsTheUpdateInfo()
+            public void CheckForUpdate_WithUpdate_ReturnsTheNewVersionNumber()
             {
                 string newVersion = "2.6.8";
                 updateServer.Stub(x => x.GetCurrentVersion()).Return(newVersion);
 
-                UpdateInfo updateInfo;
-                bool hasUpdate = updateManager.CheckForUpdate(out updateInfo);
+                UpdateInfo updateInfo = updateManager.CheckForUpdate();
 
-                Assert.That(updateInfo, Is.Not.Null);
                 Assert.That(updateInfo.Version, Is.EqualTo(newVersion));
             }
 
@@ -98,7 +104,7 @@ namespace AppUpdater.Tests
             public void DoUpdate_ChangesTheCurrentVersion()
             {
                 string newVersion = "2.6.8";
-                UpdateInfo updateInfo = new UpdateInfo(newVersion);
+                UpdateInfo updateInfo = new UpdateInfo(true, newVersion);
                 updateServer.Stub(x => x.GetManifest(newVersion)).Return(new VersionManifest(newVersion, new VersionManifestFile[0]));
                 localStructureManager.Stub(x => x.LoadManifest(initialVersion)).Return(new VersionManifest(initialVersion, new VersionManifestFile[0]));
 
@@ -111,7 +117,7 @@ namespace AppUpdater.Tests
             public void DoUpdate_SavesTheCurrentVersion()
             {
                 string newVersion = "2.6.8";
-                UpdateInfo updateInfo = new UpdateInfo(newVersion);
+                UpdateInfo updateInfo = new UpdateInfo(true, newVersion);
                 updateServer.Stub(x => x.GetManifest(newVersion)).Return(new VersionManifest(newVersion, new VersionManifestFile[0]));
                 localStructureManager.Stub(x => x.LoadManifest(initialVersion)).Return(new VersionManifest(initialVersion, new VersionManifestFile[0]));
 
@@ -124,7 +130,7 @@ namespace AppUpdater.Tests
             public void DoUpdate_ExecutesTheUpdate()
             {
                 string newVersion = "2.6.8";
-                UpdateInfo updateInfo = new UpdateInfo(newVersion);
+                UpdateInfo updateInfo = new UpdateInfo(true, newVersion);
                 updateServer.Stub(x => x.GetManifest(newVersion)).Return(new VersionManifest(newVersion, new VersionManifestFile[0]));
                 localStructureManager.Stub(x => x.LoadManifest(initialVersion)).Return(new VersionManifest(initialVersion, new VersionManifestFile[0]));
 

@@ -4,7 +4,7 @@ namespace AppUpdater
     public interface IUpdateManager
     {
         void Initialize();
-        bool CheckForUpdate(out UpdateInfo updateInfo);
+        UpdateInfo CheckForUpdate();
         void DoUpdate(UpdateInfo updateInfo);
     }
 }

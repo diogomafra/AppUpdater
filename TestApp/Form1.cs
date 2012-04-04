@@ -51,8 +51,8 @@ namespace TestApp
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             UpdateManager manager = UpdateManager.Default;
-            UpdateInfo info;
-            if (manager.CheckForUpdate(out info))
+            UpdateInfo info = manager.CheckForUpdate();
+            if (info.HasUpdate)
             {
                 manager.DoUpdate(info);
                 MessageBox.Show("Updated");

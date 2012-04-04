@@ -35,7 +35,7 @@ namespace AppUpdater.Tests
             autoUpdater.Start();
             Thread.Sleep(1000);
 
-            updateManager.AssertWasCalled(x => x.CheckForUpdate(out Arg<UpdateInfo>.Out(null).Dummy));
+            updateManager.AssertWasCalled(x => x.CheckForUpdate());
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace AppUpdater.Tests
             autoUpdater.Start();
             Thread.Sleep(1000);
 
-            updateManager.AssertWasCalled(x => x.CheckForUpdate(out Arg<UpdateInfo>.Out(null).Dummy), s=>s.Repeat.Once());
+            updateManager.AssertWasCalled(x => x.CheckForUpdate(), s=>s.Repeat.Once());
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace AppUpdater.Tests
             autoUpdater.Start();
             Thread.Sleep(1500);
 
-            updateManager.AssertWasCalled(x => x.CheckForUpdate(out Arg<UpdateInfo>.Out(null).Dummy), s => s.Repeat.Twice());
+            updateManager.AssertWasCalled(x => x.CheckForUpdate(), s => s.Repeat.Twice());
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace AppUpdater.Tests
             autoUpdater.Start();
             Thread.Sleep(100);
 
-            updateManager.AssertWasCalled(x => x.CheckForUpdate(out Arg<UpdateInfo>.Out(null).Dummy), s => s.Repeat.Once());
+            updateManager.AssertWasCalled(x => x.CheckForUpdate(), s => s.Repeat.Once());
         }
 
         [Test]
@@ -83,7 +83,7 @@ namespace AppUpdater.Tests
             autoUpdater.Stop();
             Thread.Sleep(1500);
 
-            updateManager.AssertWasCalled(x => x.CheckForUpdate(out Arg<UpdateInfo>.Out(null).Dummy), s => s.Repeat.Once());
+            updateManager.AssertWasCalled(x => x.CheckForUpdate(), s => s.Repeat.Once());
         }
 
         [Test]
@@ -98,8 +98,8 @@ namespace AppUpdater.Tests
         public void Updated_IsCalledAfterUpdate()
         {
             bool called = false;
-            UpdateInfo info = new UpdateInfo("2.0.0");
-            updateManager.Stub(x => x.CheckForUpdate(out Arg<UpdateInfo>.Out(info).Dummy)).Return(true);
+            UpdateInfo info = new UpdateInfo(true, "2.0.0");
+            updateManager.Stub(x => x.CheckForUpdate()).Return(info);
             autoUpdater.Updated += (sender, e) => called = true;
 
             autoUpdater.Start();
