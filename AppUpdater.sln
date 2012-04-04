@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppUpdater.Runner", "AppUpdater.Runner\AppUpdater.Runner.csproj", "{C8673FC7-F9A6-48A2-878B-1A8C204A532E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppUpdater.Publisher", "AppUpdater.Publisher\AppUpdater.Publisher.csproj", "{04FFADC2-61CF-4D6B-B70B-4466C18BC575}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,16 @@ Global
 		{C8673FC7-F9A6-48A2-878B-1A8C204A532E}.Release|Mixed Platforms.Build.0 = Release|x86
 		{C8673FC7-F9A6-48A2-878B-1A8C204A532E}.Release|x86.ActiveCfg = Release|x86
 		{C8673FC7-F9A6-48A2-878B-1A8C204A532E}.Release|x86.Build.0 = Release|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Debug|x86.ActiveCfg = Debug|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Debug|x86.Build.0 = Debug|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Release|Any CPU.ActiveCfg = Release|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Release|Mixed Platforms.Build.0 = Release|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Release|x86.ActiveCfg = Release|x86
+		{04FFADC2-61CF-4D6B-B70B-4466C18BC575}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

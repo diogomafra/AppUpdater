@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using AppUpdater.Manifest;
+using AppUpdater.Utils;
 
 namespace AppUpdater.LocalStructure
 {
@@ -30,23 +31,7 @@ namespace AppUpdater.LocalStructure
         public VersionManifest LoadManifest(string version)
         {
             string versionDir = GetVersionDir(version);
-            if (versionDir[versionDir.Length - 1] != Path.DirectorySeparatorChar)
-            {
-                versionDir += Path.DirectorySeparatorChar;
-            }
-
-            List<VersionManifestFile> files = new List<VersionManifestFile>();
-            foreach (string filename in Directory.GetFiles(versionDir, "*", SearchOption.AllDirectories))
-            {
-                using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
-                {
-                    string checksum = GetChecksum(fs);
-                    VersionManifestFile file = new VersionManifestFile(filename.Remove(0, versionDir.Length), checksum, fs.Length);
-                    files.Add(file);
-                }
-            }
-
-            return new VersionManifest(version, files);
+            return VersionManifest.GenerateFromDirectory(version, versionDir);
         }
 
         public string GetCurrentVersion()
@@ -103,19 +88,6 @@ namespace AppUpdater.LocalStructure
         private string GetFilename(string version, string filename)
         {
             return Path.Combine(GetVersionDir(version), filename);
-        }
-
-        private string GetChecksum(Stream stream)
-        {
-            SHA256Managed sha = new SHA256Managed();
-            byte[] checksum = sha.ComputeHash(stream);
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in checksum)
-            {
-                sb.Append(b.ToString("X2"));
-            }
-
-            return sb.ToString();
         }
     }
 }

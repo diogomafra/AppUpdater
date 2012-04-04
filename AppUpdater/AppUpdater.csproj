@@ -60,6 +60,8 @@
     <Compile Include="Server\UpdateRecipeFile.cs" />
     <Compile Include="Manifest\VersionManifest.cs" />
     <Compile Include="Manifest\VersionManifestFile.cs" />
+    <Compile Include="Utils\Checksum.cs" />
+    <Compile Include="Utils\PathUtils.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

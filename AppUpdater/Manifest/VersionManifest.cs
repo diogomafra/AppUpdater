@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using AppUpdater.Recipe;
+using AppUpdater.Utils;
+using System.IO;
 
 namespace AppUpdater.Manifest
 {
@@ -46,6 +48,45 @@ namespace AppUpdater.Manifest
             }
 
             return new UpdateRecipe(newVersionManifest.Version, this.Version, recipeFiles);
+        }
+
+        public static VersionManifest GenerateFromDirectory(string version, string directory)
+        {
+            directory = PathUtils.AddTrailingSlash(directory);
+
+            List<VersionManifestFile> files = new List<VersionManifestFile>();
+            foreach (string filename in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                {
+                    string checksum = Checksum.Calculate(fs);
+                    VersionManifestFile file = new VersionManifestFile(filename.Remove(0, directory.Length), checksum, fs.Length);
+                    files.Add(file);
+                }
+            }
+
+            return new VersionManifest(version, files);
+        }
+
+        public void SaveToFile(string filename)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            using (XmlWriter xml = XmlWriter.Create(filename, settings))
+            {
+                xml.WriteStartElement("manifest");
+                xml.WriteStartElement("files");
+                foreach (var file in Files)
+                {
+                    xml.WriteStartElement("file");
+                    xml.WriteAttributeString("name", file.Name);
+                    xml.WriteAttributeString("checksum", file.Checksum);
+                    xml.WriteAttributeString("size", file.Size.ToString());
+                    xml.WriteEndElement();
+                }
+                xml.WriteEndElement();
+                xml.WriteEndElement();
+            }
         }
     }
 }

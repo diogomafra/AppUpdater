@@ -48,7 +48,7 @@ namespace AppUpdater.Tests
         }
 
         [Test]
-        public void LoadManifest_ReadsTheManifestFiles()
+        public void LoadManifest_GeneratesTheManifest()
         {
             string dir = Path.Combine(baseDir, "1.0.0");
             Directory.CreateDirectory(dir);

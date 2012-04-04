@@ -2,6 +2,7 @@
 using AppUpdater.Manifest;
 using AppUpdater.Recipe;
 using NUnit.Framework;
+using System.IO;
 
 namespace AppUpdater.Tests
 {
@@ -81,6 +82,65 @@ namespace AppUpdater.Tests
 
             Assert.That(recipe.Files, Has.Count.EqualTo(1));
             Assert.That(recipe.Files.First().Action, Is.EqualTo(FileUpdateAction.Download));
+        }
+
+        [Test]
+        public void GenerateFromDirectory_GeneratesTheManifest()
+        {
+            string dir = Path.GetTempFileName() + "_";
+            Directory.CreateDirectory(dir);
+            Directory.CreateDirectory(Path.Combine(dir, "abc"));
+            File.WriteAllText(Path.Combine(dir, "test1.txt"), "some text");
+            File.WriteAllText(Path.Combine(dir, "abc\\test2.txt"), "another text");
+
+            VersionManifest manifest = VersionManifest.GenerateFromDirectory("1.0.0", dir);
+
+            Assert.That(manifest, Is.Not.Null);
+            Assert.That(manifest.Version, Is.EqualTo("1.0.0"));
+            Assert.That(manifest.Files, Has.Count.EqualTo(2));
+            Assert.That(manifest.Files.ElementAt(0).Name, Is.EqualTo("test1.txt"));
+            Assert.That(manifest.Files.ElementAt(0).Checksum, Is.EqualTo("B94F6F125C79E3A5FFAA826F584C10D52ADA669E6762051B826B55776D05AED2"));
+            Assert.That(manifest.Files.ElementAt(0).Size, Is.EqualTo(9));
+            Assert.That(manifest.Files.ElementAt(1).Name, Is.EqualTo("abc\\test2.txt"));
+            Assert.That(manifest.Files.ElementAt(1).Checksum, Is.EqualTo("4895ECC6F0C011072AF486EA30A1239CAA1B297FB61ECACA8AC94D9C2071BE22"));
+            Assert.That(manifest.Files.ElementAt(1).Size, Is.EqualTo(12));
+        }
+
+        [Test]
+        public void SaveToFile_CreatesTheFile()
+        {
+            string filename = Path.GetTempFileName();
+            string data = @"<manifest></manifest>";
+
+            VersionManifest manifest = VersionManifest.LoadVersionData("1.0.0", data);
+            manifest.SaveToFile(filename);
+
+            Assert.That(File.Exists(filename), Is.True);
+        }
+
+        [Test]
+        public void SaveToFile_SavesAllTheInfoToTheFile()
+        {
+            string filename = Path.GetTempFileName();
+            string data = @"<manifest>
+                                <files>
+                                    <file name=""test1.txt"" checksum=""algo111"" size=""1000"" />
+                                    <file name=""test2.txt"" checksum=""algo222"" size=""2000"" />
+                                </files>
+                            </manifest>";
+
+            VersionManifest manifest = VersionManifest.LoadVersionData("1.0.0", data);
+            manifest.SaveToFile(filename);
+
+            VersionManifest savedManifest = VersionManifest.LoadVersionData("1.0.0", File.ReadAllText(filename));
+            Assert.That(manifest, Is.Not.Null);
+            Assert.That(manifest.Files, Has.Count.EqualTo(2));
+            Assert.That(manifest.Files.ElementAt(0).Name, Is.EqualTo("test1.txt"));
+            Assert.That(manifest.Files.ElementAt(0).Checksum, Is.EqualTo("algo111"));
+            Assert.That(manifest.Files.ElementAt(0).Size, Is.EqualTo(1000));
+            Assert.That(manifest.Files.ElementAt(1).Name, Is.EqualTo("test2.txt"));
+            Assert.That(manifest.Files.ElementAt(1).Checksum, Is.EqualTo("algo222"));
+            Assert.That(manifest.Files.ElementAt(1).Size, Is.EqualTo(2000));
         }
     }
 }

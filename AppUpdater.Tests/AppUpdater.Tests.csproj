@@ -49,12 +49,19 @@
     <Compile Include="AutoUpdaterTests.cs" />
     <Compile Include="DefaultLocalStructureManagerTests.cs" />
     <Compile Include="LoggerTests.cs" />
+    <Compile Include="Publisher\AppPublisherTests.cs" />
     <Compile Include="UpdateManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UpdaterChefTests.cs" />
+    <Compile Include="Utils\ChecksumTests.cs" />
+    <Compile Include="Utils\PathUtilsTests.cs" />
     <Compile Include="VersionManifestTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AppUpdater.Publisher\AppUpdater.Publisher.csproj">
+      <Project>{04FFADC2-61CF-4D6B-B70B-4466C18BC575}</Project>
+      <Name>AppUpdater.Publisher</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AppUpdater\AppUpdater.csproj">
       <Project>{AC95E782-8C9F-4381-A043-6D8A65806743}</Project>
       <Name>AppUpdater</Name>
