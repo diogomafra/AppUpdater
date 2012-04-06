@@ -6,3 +6,4 @@ TestApp/Updates/*/*.dll
 TestApp/Updates/*/*.pdb
 TestApp/Updates/*/*.exe
 *.user
+*.swp
