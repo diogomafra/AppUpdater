@@ -54,6 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UpdaterChefTests.cs" />
     <Compile Include="Utils\ChecksumTests.cs" />
+    <Compile Include="Utils\DataCompressorTests.cs" />
     <Compile Include="Utils\PathUtilsTests.cs" />
     <Compile Include="VersionManifestTests.cs" />
   </ItemGroup>

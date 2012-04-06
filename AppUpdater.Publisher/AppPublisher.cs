@@ -29,10 +29,10 @@ namespace AppUpdater.Publisher
             foreach (string sourceFile in Directory.EnumerateFiles(sourceDirectory, "*", SearchOption.AllDirectories))
             {
                 string sourceFileRelativePath = sourceFile.Remove(0, sourceDirectory.Length);
-                string destinationFile = Path.Combine(destinationVersionDirectory, sourceFileRelativePath);
+                string destinationFile = Path.Combine(destinationVersionDirectory, sourceFileRelativePath + ".deploy");
 
                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
-                File.Copy(sourceFile, destinationFile, true);
+                CreateDeployFile(sourceFile, destinationFile);
             }
         }
 
@@ -48,6 +48,17 @@ namespace AppUpdater.Publisher
             doc.LoadXml("<config><version></version></config>");
             doc.SelectSingleNode("config/version").InnerText = version;
             doc.Save(Path.Combine(destionationDirectory, "config.xml"));
+        }
+
+        private static void CreateDeployFile(string sourceFile, string destinationFile)
+        {
+            using (FileStream streamSource = File.OpenRead(sourceFile))
+            {
+                using (FileStream streamDestination = File.OpenWrite(destinationFile))
+                {
+                    DataCompressor.Compress(streamSource, streamDestination);
+                }
+            }
         }
     }
 }

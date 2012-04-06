@@ -14,6 +14,14 @@ namespace AppUpdater.Recipe
         public long Size { get; private set; }
         public FileUpdateAction Action { get; private set; }
 
+        public string DeployedName
+        {
+            get
+            {
+                return Name == null ? null : Name + ".deploy";
+            }
+        }
+
         public UpdateRecipeFile(string name, string checksum, long size, FileUpdateAction action)
         {
             this.Name = name;

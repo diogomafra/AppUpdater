@@ -1,7 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest>
   <files>
-    <file name="TestApp.exe" checksum="AABBCC" size="1000" />
-    <file name="AppUpdater.dll" checksum="AABBCC" size="1000" />
+    <file name="AppUpdater.dll" checksum="65030EBCF5359F4FD2A37F12A3F36FDBAB560363C9CB1973C83C8296C10773AD" size="17920" />
+    <file name="AppUpdater.pdb" checksum="817CAAAA290E89212FC9A1E0B8EA5A6C032B368BFAE69E17F9F132788F59A490" size="52736" />
+    <file name="TestApp.exe" checksum="EFD29B35DA58C126C699DF81D83AC9858739E6BD6B31E44FB2C74D08091BAA05" size="11264" />
+    <file name="TestApp.pdb" checksum="80E1813FCFECFB72D63608CC7ED2AB9176EC26B64289087A8D1261A731C7DDCF" size="22016" />
   </files>
 </manifest>

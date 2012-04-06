@@ -7,6 +7,7 @@ using AppUpdater.Publisher;
 using System.IO;
 using AppUpdater.Manifest;
 using System.Xml;
+using AppUpdater.Utils;
 
 namespace AppUpdater.Tests.Publisher
 {
@@ -46,12 +47,25 @@ namespace AppUpdater.Tests.Publisher
         }
 
         [Test]
-        public void Publish_WithValidInfo_CopiesTheFilesToTargetDir()
+        public void Publish_WithValidInfo_CopiesTheFilesToTargetDirWithDeployExtension()
         {
             appPublisher.Publish(sourceDir, destinationDir, "1.1.0");
 
-            Assert.That(File.Exists(Path.Combine(destinationDir, "1.1.0\\test1.txt")), Is.True);
-            Assert.That(File.Exists(Path.Combine(destinationDir, "1.1.0\\another\\test2.txt")), Is.True);
+            Assert.That(File.Exists(Path.Combine(destinationDir, "1.1.0\\test1.txt.deploy")), Is.True);
+            Assert.That(File.Exists(Path.Combine(destinationDir, "1.1.0\\another\\test2.txt.deploy")), Is.True);
+        }
+
+        [Test]
+        public void Publish_WithValidInfo_CompressTheDeployFiles()
+        {
+            appPublisher.Publish(sourceDir, destinationDir, "1.1.0");
+
+            string destinationFile = Path.Combine(destinationDir, "1.1.0\\test1.txt.deploy");
+            string sourceFile = Path.Combine(sourceDir, "test1.txt");
+            byte[] originalData = File.ReadAllBytes(sourceFile);
+            byte[] compressedData = File.ReadAllBytes(destinationFile);
+            byte[] decompressedData = DataCompressor.Decompress(compressedData);
+            Assert.That(decompressedData, Is.EqualTo(originalData));
         }
 
         [Test]

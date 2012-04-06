@@ -2,6 +2,7 @@
 using AppUpdater.Recipe;
 using AppUpdater.Server;
 using AppUpdater.Log;
+using AppUpdater.Utils;
 
 namespace AppUpdater.Chef
 {
@@ -33,7 +34,8 @@ namespace AppUpdater.Chef
                 }
                 else if (file.Action == FileUpdateAction.Download)
                 {
-                    byte[] data = updateServer.DownloadFile(recipe.NewVersion, file.Name);
+                    byte[] data = updateServer.DownloadFile(recipe.NewVersion, file.DeployedName);
+                    data = DataCompressor.Decompress(data);
                     localStructureManager.SaveFile(recipe.NewVersion, file.Name, data);
                 }
             }

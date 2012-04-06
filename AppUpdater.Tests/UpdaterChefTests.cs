@@ -4,6 +4,7 @@ using AppUpdater.Server;
 using AppUpdater.Chef;
 using NUnit.Framework;
 using Rhino.Mocks;
+using AppUpdater.Utils;
 
 namespace AppUpdater.Tests
 {
@@ -56,10 +57,11 @@ namespace AppUpdater.Tests
         public void Cook_SavesNewFiles()
         {
             byte[] data = new byte[]{1,2,3,4,5};
-            updateServer.Stub(x => x.DownloadFile("2.0.0", "test2.txt")).Return(data);
+            updateServer.Stub(x => x.DownloadFile("2.0.0", "test2.txt.deploy")).Return(DataCompressor.Compress(data));
             UpdateRecipeFile file1 = new UpdateRecipeFile("test1.txt", "123", 100, FileUpdateAction.Copy);
             UpdateRecipeFile file2 = new UpdateRecipeFile("test2.txt", "123", 100, FileUpdateAction.Download);
             UpdateRecipe updateRecipe = new UpdateRecipe("2.0.0", "1.0.0", new UpdateRecipeFile[] { file1, file2 });
+
             updaterChef.Cook(updateRecipe);
 
             localStructureManager.AssertWasCalled(x => x.SaveFile("2.0.0", "test2.txt", data));
