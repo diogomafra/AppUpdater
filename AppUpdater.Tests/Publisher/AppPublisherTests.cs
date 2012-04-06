@@ -74,7 +74,11 @@ namespace AppUpdater.Tests.Publisher
             VersionManifest manifest = VersionManifest.LoadVersionData("1.1.0", File.ReadAllText(manifestFilename));
             Assert.That(manifest.Files.Count(), Is.EqualTo(2));
             Assert.That(manifest.Files.ElementAt(0).Name, Is.EqualTo("test1.txt"));
+            Assert.That(manifest.Files.ElementAt(0).Checksum, Is.EqualTo("B4EDFE85F28DA56CBF043E1FC1A43001F367700CCCB49DBC80F3EF455D3813DE"));
+            Assert.That(manifest.Files.ElementAt(0).Size, Is.EqualTo(13));
             Assert.That(manifest.Files.ElementAt(1).Name, Is.EqualTo("another\\test2.txt"));
+            Assert.That(manifest.Files.ElementAt(1).Checksum, Is.EqualTo("187B8EA2884ADA2F66FBB11CDC9B654BAFD8654471D6B35966BBCE4462AC5E66"));
+            Assert.That(manifest.Files.ElementAt(1).Size, Is.EqualTo(13));
         }
 
         [Test]
