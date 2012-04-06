@@ -35,6 +35,19 @@ namespace AppUpdater.Tests
         }
 
         [Test]
+        public void GetInstalledVersions_ReturnsAllInstalledVersions()
+        {
+            string[] expectedVersions = {"1.0.0", "2.0.0", "3.1.1"};
+            structureManager.CreateVersionDir("1.0.0");
+            structureManager.CreateVersionDir("2.0.0");
+            structureManager.CreateVersionDir("3.1.1");
+
+            string[] versions = structureManager.GetInstalledVersions();
+
+            Assert.That(versions, Is.EqualTo(expectedVersions));
+        }
+
+        [Test]
         public void DeleteVersionDir_DeletesTheDirectory()
         {
             string dir = Path.Combine(baseDir, "1.0.0");
@@ -93,6 +106,16 @@ namespace AppUpdater.Tests
             doc.Load(configFilename);
             string version = doc.SelectSingleNode("config/version").InnerText;
             Assert.That(version, Is.EqualTo("3.4.5"));
+        }
+
+        [Test]
+        public void GetExecutingVersion_ReturnsTheVersionThatIsBeingExecuted()
+        {
+            DefaultLocalStructureManager.GetExecutablePath = () => @"C:\Test\AppRoot\1.4.5\app.exe";
+
+            string executingVersion = structureManager.GetExecutingVersion();
+
+            Assert.That(executingVersion, Is.EqualTo("1.4.5"));
         }
 
         [Test]

@@ -6,12 +6,15 @@ using System.Text;
 using System.Xml;
 using AppUpdater.Manifest;
 using AppUpdater.Utils;
+using System.Reflection;
+using System.Linq;
 
 namespace AppUpdater.LocalStructure
 {
     public class DefaultLocalStructureManager : ILocalStructureManager
     {
         public string baseDir;
+        public static Func<string> GetExecutablePath = GetExecutingAssemblyLocation;
 
         public DefaultLocalStructureManager(string baseDir)
         {
@@ -26,6 +29,15 @@ namespace AppUpdater.LocalStructure
         public void DeleteVersionDir(string version)
         {
             Directory.Delete(GetVersionDir(version), true);
+        }
+
+        public string[] GetInstalledVersions()
+        {
+            string baseDirectory = PathUtils.AddTrailingSlash(baseDir);
+
+            return Directory.EnumerateDirectories(baseDirectory)
+                            .Select(x => x.Remove(0, baseDirectory.Length))
+                            .ToArray();
         }
 
         public VersionManifest LoadManifest(string version)
@@ -50,6 +62,11 @@ namespace AppUpdater.LocalStructure
             doc.Load(configFilename);
             doc.SelectSingleNode("config/version").InnerText = version;
             doc.Save(configFilename);
+        }
+
+        public string GetExecutingVersion()
+        {
+            return Directory.GetParent(GetExecutablePath()).Name;
         }
 
         public bool HasVersionFolder(string version)
@@ -88,6 +105,11 @@ namespace AppUpdater.LocalStructure
         private string GetFilename(string version, string filename)
         {
             return Path.Combine(GetVersionDir(version), filename);
+        }
+
+        private static string GetExecutingAssemblyLocation()
+        {
+            return Assembly.GetExecutingAssembly().Location;
         }
     }
 }

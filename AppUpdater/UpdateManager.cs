@@ -5,11 +5,14 @@ using AppUpdater.Recipe;
 using AppUpdater.Server;
 using AppUpdater.Chef;
 using AppUpdater.Log;
+using System.Linq;
+using System;
 
 namespace AppUpdater
 {
     public class UpdateManager : IUpdateManager
     {
+        private static readonly ILog log = Logger.For<UpdateManager>();
         private readonly IUpdateServer updateServer;
         private readonly ILocalStructureManager localStructureManager;
         private readonly IUpdaterChef updaterChef;
@@ -64,6 +67,27 @@ namespace AppUpdater
 
             localStructureManager.SetCurrentVersion(updateInfo.Version);
             CurrentVersion = updateInfo.Version;
+
+            DeleteOldVersions();
+        }
+
+        private void DeleteOldVersions()
+        {
+            string executingVersion = localStructureManager.GetExecutingVersion();
+            string[] installedVersions = localStructureManager.GetInstalledVersions();
+            string[] versionsInUse = new string[] { executingVersion, CurrentVersion };
+
+            foreach (var version in installedVersions.Except(versionsInUse))
+            {
+                try
+                {
+                    localStructureManager.DeleteVersionDir(version);
+                }
+                catch (Exception err)
+                {
+                    log.Error("Error deleting old version. {0}", err.Message);
+                }
+            }
         }
     }
 }

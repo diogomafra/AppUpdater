@@ -2,8 +2,6 @@ bin
 obj
 .DS_Store
 *.suo
-TestApp/Updates/*/*.dll
-TestApp/Updates/*/*.pdb
-TestApp/Updates/*/*.exe
+TestApp/Updates/*/*.deploy
 *.user
 *.swp

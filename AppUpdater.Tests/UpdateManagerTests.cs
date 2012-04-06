@@ -5,6 +5,7 @@ using AppUpdater.Server;
 using AppUpdater.Chef;
 using NUnit.Framework;
 using Rhino.Mocks;
+using System;
 
 namespace AppUpdater.Tests
 {
@@ -45,6 +46,7 @@ namespace AppUpdater.Tests
             private ILocalStructureManager localStructureManager;
             private IUpdaterChef updaterChef;
             private string initialVersion;
+            private string[] installedVersions;
 
             [SetUp]
             public void Setup()
@@ -55,9 +57,13 @@ namespace AppUpdater.Tests
                 updateManager = new UpdateManager(updateServer, localStructureManager, updaterChef);
 
                 initialVersion = "1.2.3";
+                installedVersions = new string[] { "1.0.0", "1.1.1", "1.2.3" };
                 localStructureManager.Stub(x => x.GetCurrentVersion()).Return(initialVersion);
+                localStructureManager.Stub(x => x.GetExecutingVersion()).Return(initialVersion);
+                localStructureManager.Stub(x => x.GetInstalledVersions()).Do(new Func<string[]>(()=>installedVersions));
                 updateManager.Initialize();
             }
+
 
             [Test]
             public void CheckForUpdate_WithoutUpdate_HasUpdateIsFalse()
@@ -137,6 +143,55 @@ namespace AppUpdater.Tests
                 updateManager.DoUpdate(updateInfo);
 
                 updaterChef.AssertWasCalled(x => x.Cook(Arg<UpdateRecipe>.Is.Anything));
+            }
+
+            [Test]
+            public void DoUpdate_RemovesOldVersions()
+            {
+                var updateInfo = SetupUpdateToVersion("3.1");
+
+                updateManager.DoUpdate(updateInfo);
+
+                localStructureManager.AssertWasCalled(x => x.DeleteVersionDir("1.0.0"));
+                localStructureManager.AssertWasCalled(x => x.DeleteVersionDir("1.1.1"));
+            }
+
+            [Test]
+            public void DoUpdate_DoesNotRemoveTheExecutingVersion()
+            {
+                var updateInfo = SetupUpdateToVersion("3.1");
+
+                updateManager.DoUpdate(updateInfo);
+
+                localStructureManager.AssertWasNotCalled(x => x.DeleteVersionDir(initialVersion));
+            }
+
+            [Test]
+            public void DoUpdate_DoesNotRemoveTheNewVersion()
+            {
+                installedVersions = new string[] { "1.0.0", "1.1.1", "1.2.3", "3.1"};
+                var updateInfo = SetupUpdateToVersion("3.1");
+
+                updateManager.DoUpdate(updateInfo);
+
+                localStructureManager.AssertWasNotCalled(x => x.DeleteVersionDir("3.1"));
+            }
+
+            [Test]
+            public void DoUpdate_WithAnErrorWhileDeletingTheOldVersion_IgnoresTheError()
+            {
+                localStructureManager.Stub(x => x.DeleteVersionDir("1.0.0")).Throw(new Exception("Error deliting version."));
+                var updateInfo = SetupUpdateToVersion("3.1");
+
+                updateManager.DoUpdate(updateInfo);
+            }
+
+            private UpdateInfo SetupUpdateToVersion(string newVersion)
+            {
+                UpdateInfo updateInfo = new UpdateInfo(true, newVersion);
+                updateServer.Stub(x => x.GetManifest(newVersion)).Return(new VersionManifest(newVersion, new VersionManifestFile[0]));
+                localStructureManager.Stub(x => x.LoadManifest(initialVersion)).Return(new VersionManifest(initialVersion, new VersionManifestFile[0]));
+                return updateInfo;
             }
         }
     }
