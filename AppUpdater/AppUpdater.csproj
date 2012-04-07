@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoUpdater.cs" />
+    <Compile Include="Delta\DeltaAPI.cs" />
+    <Compile Include="Delta\MSDeltaPInvoke.cs" />
     <Compile Include="IUpdateManager.cs" />
     <Compile Include="LocalStructure\DefaultLocalStructureManager.cs" />
     <Compile Include="Log\EmptyLog.cs" />
