@@ -123,6 +123,36 @@ namespace AppUpdater.Tests
         }
 
         [Test]
+        public void UpdateTo_WithAnIncorrectDelta_SetTheActionAsDownload()
+        {
+            VersionManifestFile fileOriginal = new VersionManifestFile("arquivo1.txt", "333", 1000);
+            VersionManifestFile fileUpdate = new VersionManifestFile("arquivo1.txt", "123", 1000);
+            fileUpdate.Deltas.Add(new VersionManifestDeltaFile("deltas\\arquivo1.txt", "444", 10));
+            VersionManifest currentManifest = new VersionManifest("1.0.0", new VersionManifestFile[] { fileOriginal });
+            VersionManifest updateManifest = new VersionManifest("2.0.0", new VersionManifestFile[] { fileUpdate });
+
+            UpdateRecipe recipe = currentManifest.UpdateTo(updateManifest);
+
+            Assert.That(recipe.Files, Has.Count.EqualTo(1));
+            Assert.That(recipe.Files.First().Action, Is.EqualTo(FileUpdateAction.Download));
+        }
+
+        [Test]
+        public void UpdateTo_WithADeltaAvailable_SetTheActionAsDownloadDelta()
+        {
+            VersionManifestFile fileOriginal = new VersionManifestFile("arquivo1.txt", "333", 1000);
+            VersionManifestFile fileUpdate = new VersionManifestFile("arquivo1.txt", "123", 1000);
+            fileUpdate.Deltas.Add(new VersionManifestDeltaFile("deltas\\arquivo1.txt", "333", 10));
+            VersionManifest currentManifest = new VersionManifest("1.0.0", new VersionManifestFile[] { fileOriginal });
+            VersionManifest updateManifest = new VersionManifest("2.0.0", new VersionManifestFile[] { fileUpdate });
+
+            UpdateRecipe recipe = currentManifest.UpdateTo(updateManifest);
+
+            Assert.That(recipe.Files, Has.Count.EqualTo(1));
+            Assert.That(recipe.Files.First().Action, Is.EqualTo(FileUpdateAction.DownloadDelta));
+        }
+
+        [Test]
         public void GenerateFromDirectory_GeneratesTheManifest()
         {
             string dir = Path.GetTempFileName() + "_";

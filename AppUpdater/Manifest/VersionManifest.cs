@@ -5,6 +5,7 @@ using System.Xml;
 using AppUpdater.Recipe;
 using AppUpdater.Utils;
 using System.IO;
+using AppUpdater.Delta;
 
 namespace AppUpdater.Manifest
 {
@@ -64,8 +65,28 @@ namespace AppUpdater.Manifest
             foreach (var file in newVersionManifest.Files)
             {
                 VersionManifestFile originalFile = this.Files.FirstOrDefault(x => x.Name.Equals(file.Name, StringComparison.CurrentCultureIgnoreCase));
-                FileUpdateAction action = originalFile != null && originalFile.Checksum == file.Checksum ? FileUpdateAction.Copy : FileUpdateAction.Download;
-                recipeFiles.Add(new UpdateRecipeFile(file.Name, file.Checksum, file.Size, action));
+                FileUpdateAction action = FileUpdateAction.Download;
+                string fileToDownload = file.DeployedName;
+                long size = file.Size;
+                if (originalFile != null)
+                {
+                    if (originalFile.Checksum == file.Checksum)
+                    {
+                        action = FileUpdateAction.Copy;
+                    }
+                    else if (DeltaAPI.IsSupported())
+                    {
+                        VersionManifestDeltaFile delta = file.GetDeltaFrom(originalFile.Checksum);
+                        if (delta != null)
+                        {
+                            action = FileUpdateAction.DownloadDelta;
+                            fileToDownload = delta.Filename;
+                            size = delta.Size;
+                        }
+                    }
+                }
+
+                recipeFiles.Add(new UpdateRecipeFile(file.Name, file.Checksum, size, action, fileToDownload));
             }
 
             return new UpdateRecipe(newVersionManifest.Version, this.Version, recipeFiles);

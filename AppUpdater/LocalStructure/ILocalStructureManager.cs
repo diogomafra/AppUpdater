@@ -15,6 +15,7 @@ namespace AppUpdater.LocalStructure
         bool HasVersionFolder(string version);
         void CopyFile(string originVersion, string destinationVersion, string filename);
         void SaveFile(string version, string filename, byte[] data);
+        void ApplyDelta(string originalVersion, string newVersion, string filename, byte[] deltaData);
         Uri GetUpdateServerUri();
     }
 }

@@ -8,6 +8,7 @@ using AppUpdater.Manifest;
 using AppUpdater.Utils;
 using System.Reflection;
 using System.Linq;
+using AppUpdater.Delta;
 
 namespace AppUpdater.LocalStructure
 {
@@ -86,6 +87,16 @@ namespace AppUpdater.LocalStructure
         {
             string destinationFilename = Path.Combine(GetVersionDir(version), filename);
             File.WriteAllBytes(destinationFilename, data);
+        }
+
+        public void ApplyDelta(string originalVersion, string newVersion, string filename, byte[] deltaData)
+        {
+            string originalFile = GetFilename(originalVersion, filename);
+            string newFile = GetFilename(newVersion, filename);
+            string deltaFile = Path.GetTempFileName();
+            File.WriteAllBytes(deltaFile, deltaData);
+
+            DeltaAPI.ApplyDelta(originalFile, newFile, deltaFile);
         }
 
         public Uri GetUpdateServerUri()

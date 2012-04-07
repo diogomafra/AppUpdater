@@ -7,6 +7,7 @@ using System.IO;
 using AppUpdater.LocalStructure;
 using AppUpdater.Manifest;
 using System.Xml;
+using AppUpdater.Delta;
 
 namespace AppUpdater.Tests
 {
@@ -161,6 +162,29 @@ namespace AppUpdater.Tests
             string destinationFile = Path.Combine(baseDir, "1.2.3\\test.txt");
             Assert.That(File.Exists(destinationFile), Is.True);
             Assert.That(File.ReadAllBytes(destinationFile), Is.EqualTo(data));
+        }
+
+        [Test]
+        public void ApplyDelta_SavesThePatchedFile()
+        {
+            Directory.CreateDirectory(Path.Combine(baseDir, "1.2.3"));
+            Directory.CreateDirectory(Path.Combine(baseDir, "2.0.0"));
+            byte[] originalData = new byte[] { 4, 5, 6, 5, 4 };
+            byte[] newData = new byte[] { 4, 5, 6, 5, 4 };
+            string originalFile = Path.Combine(baseDir, "1.2.3\\test1.dat");
+            string newFile = Path.GetTempFileName();
+            string deltaFile = Path.GetTempFileName();
+            string patchedFile = Path.GetTempFileName();
+            File.WriteAllBytes(originalFile, originalData);
+            File.WriteAllBytes(newFile, newData);
+            DeltaAPI.CreateDelta(originalFile, newFile, deltaFile, true);
+            byte[] deltaData = File.ReadAllBytes(deltaFile);
+
+            structureManager.ApplyDelta("1.2.3", "2.0.0", "test1.dat", deltaData);
+
+            Assert.That(File.Exists(Path.Combine(baseDir, "2.0.0\\test1.dat")), Is.True);
+            byte[] patchedData = File.ReadAllBytes(Path.Combine(baseDir, "2.0.0\\test1.dat"));
+            Assert.That(patchedData, Is.EqualTo(newData));
         }
 
         [Test]

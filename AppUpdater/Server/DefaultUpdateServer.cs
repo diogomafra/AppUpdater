@@ -3,12 +3,14 @@ using System.IO;
 using System.Net;
 using System.Xml;
 using AppUpdater.Manifest;
+using AppUpdater.Log;
 
 namespace AppUpdater.Server
 {
     public class DefaultUpdateServer : IUpdateServer
     {
         private readonly Uri updateServerUrl;
+        private static readonly ILog log = Logger.For<DefaultUpdateServer>();
 
         public DefaultUpdateServer(Uri updateServerUrl)
         {
@@ -39,6 +41,7 @@ namespace AppUpdater.Server
         {
             Uri versionUrl = new Uri(updateServerUrl, filename);
             WebClient client = new WebClient();
+            log.Debug("Downloading from url: {0}", versionUrl);
             return client.DownloadString(versionUrl);
         }
 
@@ -46,6 +49,7 @@ namespace AppUpdater.Server
         {
             Uri versionUrl = new Uri(updateServerUrl, filename);
             WebClient client = new WebClient();
+            log.Debug("Downloading from url: {0}", versionUrl);
             return client.DownloadData(versionUrl);
         }
 

@@ -4,7 +4,8 @@ namespace AppUpdater.Recipe
     public enum FileUpdateAction
     {
         Copy,
-        Download
+        Download,
+        DownloadDelta
     }
 
     public class UpdateRecipeFile
@@ -13,21 +14,15 @@ namespace AppUpdater.Recipe
         public string Checksum { get; private set; }
         public long Size { get; private set; }
         public FileUpdateAction Action { get; private set; }
+        public string FileToDownload { get; private set; }
 
-        public string DeployedName
-        {
-            get
-            {
-                return Name == null ? null : Name + ".deploy";
-            }
-        }
-
-        public UpdateRecipeFile(string name, string checksum, long size, FileUpdateAction action)
+        public UpdateRecipeFile(string name, string checksum, long size, FileUpdateAction action, string fileToDownload)
         {
             this.Name = name;
             this.Checksum = checksum;
             this.Size = size;
             this.Action = action;
+            this.FileToDownload = fileToDownload;
         }
     }
 }
