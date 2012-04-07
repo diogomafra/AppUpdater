@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,6 +57,7 @@
     <Compile Include="Utils\ChecksumTests.cs" />
     <Compile Include="Utils\DataCompressorTests.cs" />
     <Compile Include="Utils\PathUtilsTests.cs" />
+    <Compile Include="VersionManifestFileTests.cs" />
     <Compile Include="VersionManifestTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -50,6 +50,7 @@
     <Compile Include="Log\EmptyLog.cs" />
     <Compile Include="Log\ILog.cs" />
     <Compile Include="Log\Logger.cs" />
+    <Compile Include="Manifest\VersionManifestDeltaFile.cs" />
     <Compile Include="Server\DefaultUpdateServer.cs" />
     <Compile Include="Chef\IUpdaterChef.cs" />
     <Compile Include="LocalStructure\ILocalStructureManager.cs" />

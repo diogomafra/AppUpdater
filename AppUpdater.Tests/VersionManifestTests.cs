@@ -14,7 +14,10 @@ namespace AppUpdater.Tests
         {
             string data = @"<manifest>
                                 <files>
-                                    <file name=""teste1.txt"" checksum=""algo111"" size=""1000"" />
+                                    <file name=""teste1.txt"" checksum=""algo111"" size=""1000"">
+                                        <delta from=""AABBCC"" size=""500"" file=""teste1.txt.1.delta"" />
+                                        <delta from=""CCDDEE"" size=""400"" file=""teste1.txt.2.delta"" />
+                                    </file>
                                     <file name=""teste2.txt"" checksum=""algo222"" size=""2000"" />
                                 </files>
                             </manifest>";
@@ -27,6 +30,41 @@ namespace AppUpdater.Tests
             Assert.That(manifest.Files.ElementAt(0).Name, Is.EqualTo("teste1.txt"));
             Assert.That(manifest.Files.ElementAt(0).Checksum, Is.EqualTo("algo111"));
             Assert.That(manifest.Files.ElementAt(0).Size, Is.EqualTo(1000));
+
+            Assert.That(manifest.Files.ElementAt(0).Deltas.Count(), Is.EqualTo(2));
+            Assert.That(manifest.Files.ElementAt(0).Deltas.ElementAt(0).Checksum, Is.EqualTo("AABBCC"));
+            Assert.That(manifest.Files.ElementAt(0).Deltas.ElementAt(0).Size, Is.EqualTo(500));
+            Assert.That(manifest.Files.ElementAt(0).Deltas.ElementAt(0).Filename, Is.EqualTo("teste1.txt.1.delta"));
+        }
+
+        [Test]
+        public void LoadVersionFile_LoadsTheData()
+        {
+            string filename = Path.GetTempFileName();
+            string data = @"<manifest>
+                                <files>
+                                    <file name=""teste1.txt"" checksum=""algo111"" size=""1000"">
+                                        <delta from=""AABBCC"" size=""500"" file=""teste1.txt.1.delta"" />
+                                        <delta from=""CCDDEE"" size=""400"" file=""teste1.txt.2.delta"" />
+                                    </file>
+                                    <file name=""teste2.txt"" checksum=""algo222"" size=""2000"" />
+                                </files>
+                            </manifest>";
+            File.WriteAllText(filename, data);
+
+            VersionManifest manifest = VersionManifest.LoadVersionFile("1.2.3", filename);
+
+            Assert.That(manifest, Is.Not.Null);
+            Assert.That(manifest.Version, Is.EqualTo("1.2.3"));
+            Assert.That(manifest.Files, Has.Count.EqualTo(2));
+            Assert.That(manifest.Files.ElementAt(0).Name, Is.EqualTo("teste1.txt"));
+            Assert.That(manifest.Files.ElementAt(0).Checksum, Is.EqualTo("algo111"));
+            Assert.That(manifest.Files.ElementAt(0).Size, Is.EqualTo(1000));
+
+            Assert.That(manifest.Files.ElementAt(0).Deltas.Count(), Is.EqualTo(2));
+            Assert.That(manifest.Files.ElementAt(0).Deltas.ElementAt(0).Checksum, Is.EqualTo("AABBCC"));
+            Assert.That(manifest.Files.ElementAt(0).Deltas.ElementAt(0).Size, Is.EqualTo(500));
+            Assert.That(manifest.Files.ElementAt(0).Deltas.ElementAt(0).Filename, Is.EqualTo("teste1.txt.1.delta"));
         }
 
         [Test]
@@ -124,23 +162,30 @@ namespace AppUpdater.Tests
             string filename = Path.GetTempFileName();
             string data = @"<manifest>
                                 <files>
-                                    <file name=""test1.txt"" checksum=""algo111"" size=""1000"" />
+                                    <file name=""test1.txt"" checksum=""algo111"" size=""1000"" >
+                                        <delta from=""AABBCC"" size=""500"" file=""teste1.txt.1.delta"" />
+                                        <delta from=""CCDDEE"" size=""400"" file=""teste1.txt.2.delta"" />
+                                    </file>
                                     <file name=""test2.txt"" checksum=""algo222"" size=""2000"" />
                                 </files>
                             </manifest>";
 
-            VersionManifest manifest = VersionManifest.LoadVersionData("1.0.0", data);
-            manifest.SaveToFile(filename);
+            VersionManifest originalManifest = VersionManifest.LoadVersionData("1.0.0", data);
+            originalManifest.SaveToFile(filename);
 
             VersionManifest savedManifest = VersionManifest.LoadVersionData("1.0.0", File.ReadAllText(filename));
-            Assert.That(manifest, Is.Not.Null);
-            Assert.That(manifest.Files, Has.Count.EqualTo(2));
-            Assert.That(manifest.Files.ElementAt(0).Name, Is.EqualTo("test1.txt"));
-            Assert.That(manifest.Files.ElementAt(0).Checksum, Is.EqualTo("algo111"));
-            Assert.That(manifest.Files.ElementAt(0).Size, Is.EqualTo(1000));
-            Assert.That(manifest.Files.ElementAt(1).Name, Is.EqualTo("test2.txt"));
-            Assert.That(manifest.Files.ElementAt(1).Checksum, Is.EqualTo("algo222"));
-            Assert.That(manifest.Files.ElementAt(1).Size, Is.EqualTo(2000));
+            Assert.That(savedManifest, Is.Not.Null);
+            Assert.That(savedManifest.Files, Has.Count.EqualTo(2));
+            Assert.That(savedManifest.Files.ElementAt(0).Name, Is.EqualTo("test1.txt"));
+            Assert.That(savedManifest.Files.ElementAt(0).Checksum, Is.EqualTo("algo111"));
+            Assert.That(savedManifest.Files.ElementAt(0).Size, Is.EqualTo(1000));
+            Assert.That(savedManifest.Files.ElementAt(1).Name, Is.EqualTo("test2.txt"));
+            Assert.That(savedManifest.Files.ElementAt(1).Checksum, Is.EqualTo("algo222"));
+            Assert.That(savedManifest.Files.ElementAt(1).Size, Is.EqualTo(2000));
+            Assert.That(savedManifest.Files.ElementAt(0).Deltas.Count(), Is.EqualTo(2));
+            Assert.That(savedManifest.Files.ElementAt(0).Deltas.ElementAt(0).Checksum, Is.EqualTo("AABBCC"));
+            Assert.That(savedManifest.Files.ElementAt(0).Deltas.ElementAt(0).Size, Is.EqualTo(500));
+            Assert.That(savedManifest.Files.ElementAt(0).Deltas.ElementAt(0).Filename, Is.EqualTo("teste1.txt.1.delta"));
         }
     }
 }

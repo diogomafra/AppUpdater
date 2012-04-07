@@ -19,19 +19,40 @@ namespace AppUpdater.Manifest
             this.Files = files;
         }
 
+        public static VersionManifest LoadVersionFile(string version, string filename)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(filename);
+
+            return LoadData(version, doc);
+        }
+
         public static VersionManifest LoadVersionData(string version, string data)
         {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(data);
 
+            return LoadData(version, doc);
+        }
+
+        private static VersionManifest LoadData(string version, XmlDocument doc)
+        {
             List<VersionManifestFile> files = new List<VersionManifestFile>();
             foreach (XmlNode fileNode in doc.SelectNodes("manifest/files/file"))
             {
                 string filename = fileNode.Attributes["name"].Value;
                 string checksum = fileNode.Attributes["checksum"].Value;
                 long size = long.Parse(fileNode.Attributes["size"].Value);
+                List<VersionManifestDeltaFile> deltas = new List<VersionManifestDeltaFile>();
+                foreach (XmlNode deltaNode in fileNode.SelectNodes("delta"))
+                {
+                    string deltaFilename = deltaNode.Attributes["file"].Value;
+                    string deltaChecksum = deltaNode.Attributes["from"].Value;
+                    long deltaSize = long.Parse(deltaNode.Attributes["size"].Value);
+                    deltas.Add(new VersionManifestDeltaFile(deltaFilename, deltaChecksum, deltaSize));
+                }
 
-                files.Add(new VersionManifestFile(filename, checksum, size));
+                files.Add(new VersionManifestFile(filename, checksum, size, deltas));
             }
 
             return new VersionManifest(version, files);
@@ -82,6 +103,14 @@ namespace AppUpdater.Manifest
                     xml.WriteAttributeString("name", file.Name);
                     xml.WriteAttributeString("checksum", file.Checksum);
                     xml.WriteAttributeString("size", file.Size.ToString());
+                    foreach (var delta in file.Deltas)
+                    {
+                        xml.WriteStartElement("delta");
+                        xml.WriteAttributeString("from", delta.Checksum);
+                        xml.WriteAttributeString("size", delta.Size.ToString());
+                        xml.WriteAttributeString("file", delta.Filename);
+                        xml.WriteEndElement();
+                    }
                     xml.WriteEndElement();
                 }
                 xml.WriteEndElement();
