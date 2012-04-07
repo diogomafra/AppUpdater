@@ -4,6 +4,12 @@ namespace AppUpdater.Delta
 {
     public static class DeltaAPI
     {
+        public static bool IsSupported()
+        {
+            // TODO: implement it and test on Windows XP
+            return true;
+        }
+
         public static void CreateDelta(string originalFile, string newFile, string deltaFile, bool isExecutable)
         {
             DELTA_INPUT options = new DELTA_INPUT();
