@@ -53,7 +53,7 @@ namespace AppUpdater.Publisher
                             File.WriteAllBytes(decompressedOldFile, data);
 
                             string decompressedNewFile = Path.Combine(sourceDirectory, fileInVersion.Name);
-                            string deltaFilename = String.Format("deltas\\{0}.{1}.delta", fileInVersion.Name, GetShortChecksum(fileInVersion.Checksum));
+                            string deltaFilename = String.Format("deltas\\{0}.{1}.deploy", fileInVersion.Name, GetShortChecksum(fileInVersion.Checksum));
                             string deltaFile = Path.Combine(newVersionDirectory, deltaFilename);
                             Directory.CreateDirectory(Path.GetDirectoryName(deltaFile));
                             DeltaAPI.CreateDelta(decompressedOldFile, decompressedNewFile, deltaFile, true);
