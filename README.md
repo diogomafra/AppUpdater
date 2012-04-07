@@ -44,6 +44,6 @@ Server Folder Structure
 To Do
 -----
 - test all the common scenarios (e.g. no internet access);
-- use a diff algorithm to update the files ([MSDelta](http://msdn.microsoft.com/en-us/library/bb417345.aspx#msdelta));
 - give more info to the application (size of update, update progress, errors...);
-- validate the manifest and config before reading them.
+- validate the manifest and config before reading them;
+- refactor and clean up the code.
