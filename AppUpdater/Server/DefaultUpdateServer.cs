@@ -19,7 +19,7 @@ namespace AppUpdater.Server
 
         public string GetCurrentVersion()
         {
-            string xmlData = DownloadString("config.xml");
+            string xmlData = DownloadString("version.xml");
 
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(xmlData);

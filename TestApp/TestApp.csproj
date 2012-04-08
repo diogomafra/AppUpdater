@@ -85,11 +85,12 @@
   <ItemGroup>
     <Content Include="config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Updates\2.0.0\manifest.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Updates\config.xml">
+    <Content Include="Updates\version.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Updates\README.txt" />
