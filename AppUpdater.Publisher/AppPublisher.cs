@@ -97,7 +97,7 @@ namespace AppUpdater.Publisher
             XmlDocument doc = new XmlDocument();
             doc.LoadXml("<config><version></version></config>");
             doc.SelectSingleNode("config/version").InnerText = version;
-            doc.Save(Path.Combine(destionationDirectory, "config.xml"));
+            doc.Save(Path.Combine(destionationDirectory, "version.xml"));
         }
 
         private static void CreateDeployFile(string sourceFile, string destinationFile)
