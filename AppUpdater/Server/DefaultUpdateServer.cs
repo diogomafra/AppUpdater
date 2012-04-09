@@ -10,7 +10,7 @@ namespace AppUpdater.Server
     public class DefaultUpdateServer : IUpdateServer
     {
         private readonly Uri updateServerUrl;
-        private static readonly ILog log = Logger.For<DefaultUpdateServer>();
+        private readonly ILog log = Logger.For<DefaultUpdateServer>();
 
         public DefaultUpdateServer(Uri updateServerUrl)
         {

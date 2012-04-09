@@ -6,7 +6,7 @@ namespace AppUpdater
 {
     public class AutoUpdater
     {
-        private ILog log = Logger.For<AutoUpdater>();
+        private readonly ILog log = Logger.For<AutoUpdater>();
         private int secondsBetweenChecks;
         private readonly IUpdateManager updateManager;
         private Thread thread;

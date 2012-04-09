@@ -10,7 +10,7 @@ namespace AppUpdater.Chef
 {
     public class UpdaterChef : IUpdaterChef
     {
-        private static readonly ILog log = Logger.For<UpdaterChef>();
+        private readonly ILog log = Logger.For<UpdaterChef>();
         private readonly ILocalStructureManager localStructureManager;
         private readonly IUpdateServer updateServer;
 

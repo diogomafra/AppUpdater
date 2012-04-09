@@ -12,7 +12,7 @@ namespace AppUpdater
 {
     public class UpdateManager : IUpdateManager
     {
-        private static readonly ILog log = Logger.For<UpdateManager>();
+        private ILog log = Logger.For<UpdateManager>();
         private readonly IUpdateServer updateServer;
         private readonly ILocalStructureManager localStructureManager;
         private readonly IUpdaterChef updaterChef;
@@ -85,7 +85,7 @@ namespace AppUpdater
                 }
                 catch (Exception err)
                 {
-                    log.Error("Error deleting old version. {0}", err.Message);
+                    log.Error("Error deleting old version ({0}). {1}", version, err.Message);
                 }
             }
         }
