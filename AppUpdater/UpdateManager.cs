@@ -65,6 +65,7 @@ namespace AppUpdater
 
             updaterChef.Cook(recipe);
 
+            localStructureManager.SetLastValidVersion(localStructureManager.GetExecutingVersion());
             localStructureManager.SetCurrentVersion(updateInfo.Version);
             CurrentVersion = updateInfo.Version;
 

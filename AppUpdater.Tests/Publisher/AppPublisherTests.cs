@@ -101,7 +101,7 @@ namespace AppUpdater.Tests.Publisher
             appPublisher.Publish(sourceDir, destinationDir, "1.1.0", 0);
 
             XmlDocument doc = new XmlDocument();
-            doc.Load(Path.Combine(destinationDir, "config.xml"));
+            doc.Load(Path.Combine(destinationDir, "version.xml"));
             string version = doc.SelectSingleNode("config/version").InnerText;
             Assert.That(version, Is.EqualTo("1.1.0"));
         }

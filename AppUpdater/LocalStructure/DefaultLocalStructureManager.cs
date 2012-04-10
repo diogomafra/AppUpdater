@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
+using System.Linq;
+using System.Reflection;
 using System.Xml;
+using AppUpdater.Delta;
 using AppUpdater.Manifest;
 using AppUpdater.Utils;
-using System.Reflection;
-using System.Linq;
-using AppUpdater.Delta;
 
 namespace AppUpdater.LocalStructure
 {
@@ -49,20 +46,22 @@ namespace AppUpdater.LocalStructure
 
         public string GetCurrentVersion()
         {
-            string configFilename = Path.Combine(baseDir, "config.xml");
-            XmlDocument doc = new XmlDocument();
-            doc.Load(configFilename);
-
-            return doc.SelectSingleNode("config/version").InnerText;
+            return GetConfigValue("version");
         }
 
         public void SetCurrentVersion(string version)
         {
-            string configFilename = Path.Combine(baseDir, "config.xml");
-            XmlDocument doc = new XmlDocument();
-            doc.Load(configFilename);
-            doc.SelectSingleNode("config/version").InnerText = version;
-            doc.Save(configFilename);
+            SetConfigValue("version", version);
+        }
+
+        public string GetLastValidVersion()
+        {
+            return GetConfigValue("last_version");
+        }
+
+        public void SetLastValidVersion(string version)
+        {
+            SetConfigValue("last_version", version);
         }
 
         public string GetExecutingVersion()
@@ -121,6 +120,32 @@ namespace AppUpdater.LocalStructure
         private static string GetExecutingAssemblyLocation()
         {
             return Assembly.GetExecutingAssembly().Location;
+        }
+
+        private string GetConfigValue(string name)
+        {
+            string configFilename = Path.Combine(baseDir, "config.xml");
+            XmlDocument doc = new XmlDocument();
+            doc.Load(configFilename);
+
+            XmlNode configValue = doc.SelectSingleNode("config/" + name);
+            return configValue == null ? string.Empty : configValue.InnerText;
+        }
+
+        private void SetConfigValue(string name, string value)
+        {
+            string configFilename = Path.Combine(baseDir, "config.xml");
+            XmlDocument doc = new XmlDocument();
+            doc.Load(configFilename);
+            XmlNode lastVersionNode = doc.SelectSingleNode("config/" + name);
+            if (lastVersionNode == null)
+            {
+                lastVersionNode = doc.CreateElement(name);
+                doc.SelectSingleNode("config").AppendChild(lastVersionNode);
+            }
+
+            lastVersionNode.InnerText = value;
+            doc.Save(configFilename);
         }
     }
 }

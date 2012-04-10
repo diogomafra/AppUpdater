@@ -11,6 +11,8 @@ namespace AppUpdater.LocalStructure
         VersionManifest LoadManifest(string version);
         string GetCurrentVersion();
         void SetCurrentVersion(string version);
+        string GetLastValidVersion();
+        void SetLastValidVersion(string version);
         string GetExecutingVersion();
         bool HasVersionFolder(string version);
         void CopyFile(string originVersion, string destinationVersion, string filename);

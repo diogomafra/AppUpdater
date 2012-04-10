@@ -133,6 +133,21 @@ namespace AppUpdater.Tests
             }
 
             [Test]
+            public void DoUpdate_SavesTheLastValidVersionAsTheExecutingBeingExecuted()
+            {
+                string versionBeingExecuted = initialVersion;
+                string newVersion = "2.6.8";
+                UpdateInfo updateInfo = new UpdateInfo(true, newVersion);
+                updateServer.Stub(x => x.GetManifest(newVersion)).Return(new VersionManifest(newVersion, new VersionManifestFile[0]));
+                localStructureManager.Stub(x => x.GetCurrentVersion()).Return("2.0.0");
+                localStructureManager.Stub(x => x.LoadManifest(initialVersion)).Return(new VersionManifest(initialVersion, new VersionManifestFile[0]));
+
+                updateManager.DoUpdate(updateInfo);
+
+                localStructureManager.AssertWasCalled(x => x.SetLastValidVersion(versionBeingExecuted));
+            }
+
+            [Test]
             public void DoUpdate_ExecutesTheUpdate()
             {
                 string newVersion = "2.6.8";

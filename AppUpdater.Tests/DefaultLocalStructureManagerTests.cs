@@ -95,6 +95,17 @@ namespace AppUpdater.Tests
         }
 
         [Test]
+        public void GetCurrentVersion_WithoutCurrentVersionDefined_ReturnsEmpty()
+        {
+            string data = @"<config></config>";
+            File.WriteAllText(Path.Combine(baseDir, "config.xml"), data);
+
+            string version = structureManager.GetCurrentVersion();
+
+            Assert.That(version, Is.Empty);
+        }
+
+        [Test]
         public void SetCurrentVersion_UpdatesTheConfigFile()
         {
             string data = @"<config><version>1.2.3</version></config>";
@@ -107,6 +118,92 @@ namespace AppUpdater.Tests
             doc.Load(configFilename);
             string version = doc.SelectSingleNode("config/version").InnerText;
             Assert.That(version, Is.EqualTo("3.4.5"));
+        }
+
+        [Test]
+        public void SetCurrentVersion_KeepsTheLastVersion()
+        {
+            string data = @"<config><version>1.2.3</version><last_version>3.0.1</last_version></config>";
+            string configFilename = Path.Combine(baseDir, "config.xml");
+            File.WriteAllText(configFilename, data);
+
+            structureManager.SetCurrentVersion("3.4.5");
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(configFilename);
+            var lastVersion = doc.SelectSingleNode("config/last_version");
+            Assert.That(lastVersion, Is.Not.Null);
+            Assert.That(lastVersion.InnerText, Is.EqualTo("3.0.1"));
+        }
+
+        [Test]
+        public void GetLastValidVersion_WithoutLastVersionDefined_ReturnsEmpty()
+        {
+            string data = @"<config><version>1.2.3</version></config>";
+            File.WriteAllText(Path.Combine(baseDir, "config.xml"), data);
+
+            string lastVersion = structureManager.GetLastValidVersion();
+
+            Assert.That(lastVersion, Is.Empty);
+        }
+
+        [Test]
+        public void GetLastValidVersion_ReturnsTheVersion()
+        {
+            string data = @"<config><version>1.2.3</version><last_version>3.1.1</last_version></config>";
+            File.WriteAllText(Path.Combine(baseDir, "config.xml"), data);
+
+            string lastVersion = structureManager.GetLastValidVersion();
+
+            Assert.That(lastVersion, Is.EqualTo("3.1.1"));
+        }
+
+        [Test]
+        public void SetLastValidVersion_WithAnUndefinedVersion_UpdatesTheConfigFile()
+        {
+            string data = @"<config><version>1.2.3</version></config>";
+            string configFilename = Path.Combine(baseDir, "config.xml");
+            File.WriteAllText(configFilename, data);
+
+            structureManager.SetLastValidVersion("3.3.4");
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(configFilename);
+            var lastVersion = doc.SelectSingleNode("config/last_version");
+            Assert.That(lastVersion, Is.Not.Null);
+            Assert.That(lastVersion.InnerText, Is.EqualTo("3.3.4"));
+        }
+
+        [Test]
+        public void SetLastValidVersion_UpdatesTheConfigFile()
+        {
+            string data = @"<config><version>1.2.3</version><last_version>1.2.0</last_version></config>";
+            string configFilename = Path.Combine(baseDir, "config.xml");
+            File.WriteAllText(configFilename, data);
+
+            structureManager.SetLastValidVersion("3.3.4");
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(configFilename);
+            var lastVersion = doc.SelectSingleNode("config/last_version");
+            Assert.That(lastVersion, Is.Not.Null);
+            Assert.That(lastVersion.InnerText, Is.EqualTo("3.3.4"));
+        }
+
+        [Test]
+        public void SetLastValidVersion_KeepsTheVersion()
+        {
+            string data = @"<config><version>1.2.3</version><last_version>3.0.1</last_version></config>";
+            string configFilename = Path.Combine(baseDir, "config.xml");
+            File.WriteAllText(configFilename, data);
+
+            structureManager.SetLastValidVersion("3.4.5");
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(configFilename);
+            var version = doc.SelectSingleNode("config/version");
+            Assert.That(version, Is.Not.Null);
+            Assert.That(version.InnerText, Is.EqualTo("1.2.3"));
         }
 
         [Test]
