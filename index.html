@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="AppUpdater : " />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>AppUpdater</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/diogomafra/AppUpdater">Fork Me on GitHub</a>
+
+          <h1 id="project_title">AppUpdater</h1>
+          <h2 id="project_tagline"></h2>
+
+          <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/diogomafra/AppUpdater/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/diogomafra/AppUpdater/tarball/master">Download this project as a tar.gz file</a>
+          </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>AppUpdater</h1>
+
+<p>The objective of the AppUpdater component is to allow applications to be constantly and incrementally updated without user intervention.
+The behavior is similar to Google Chrome's update. Each update downloads the minimum possible amount of data.</p>
+
+<h2>How it works</h2>
+
+<ol>
+<li>The application checks from time to time the version defined in the update server;</li>
+<li>If the version is different from the one installed, then it starts the update procedure;</li>
+<li>A new folder is created for the new version, the unaltered files are copied to the new folder and the changed ones are downloaded;</li>
+<li>If the changed file has a delta available in the update server, only the delta is downloaded and not the entire file;</li>
+<li>The new version is set as the "current version";</li>
+<li>The next time the app is started it will use the new version.</li>
+</ol><h2>How to use it</h2>
+
+<p>To use the AppUpdater library the application must:</p>
+
+<ol>
+<li>follow a pre-defined structure (see later);</li>
+<li>have an update server with a pre-defined structure (see later);</li>
+<li>activate the code that checks for updates (see later).</li>
+</ol><h2>Client directory structure</h2>
+
+<p>The application that uses the AppUpdater component must have a pre-defined structure.
+The root of the application must contain the <em>Runner</em> and the <em>config.xml</em> file.
+The application must be inside a folder with the same name as the current version.</p>
+
+<p>The application is not directly executed. The <em>Runner</em> is executed and executes the corresponding application based on the current version.
+The <em>config.xml</em> file has the definition of the current version and the url of the update server.</p>
+
+<p>Client structure:</p>
+
+<ul>
+<li>Root
+
+<ul>
+<li>AppUpdater.Runner.exe</li>
+<li>config.xml</li>
+<li>1.0.0
+
+<ul>
+<li>MyApp.exe</li>
+<li>MyLib.dll</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul><h2>Server directory structure</h2>
+
+<p>The update files must be available in a web server, following a pre-defined structure.
+You don't need to create this structure manually, it's created by the publisher (see later).
+The update server url must be defined in the <em>config.xml</em> file of the client app.</p>
+
+<p>The <em>version.xml</em> file defines the current version. Based on this information, the corresponding directory is used.
+Inside each directory there is a manifest file and the files that must be deployed. The manifest file defines the files to be downloaded.</p>
+
+<p>Each version can contain deltas that are used to update without downloading the entire file, just the parts that were changed.</p>
+
+<p>Server structure:</p>
+
+<ul>
+<li>Root
+
+<ul>
+<li>version.xml</li>
+<li>1.0.0
+
+<ul>
+<li>manifest.xml</li>
+<li>MyApp.exe.deploy</li>
+<li>MyLib.dll.deploy</li>
+</ul>
+</li>
+<li>2.0.0
+
+<ul>
+<li>manifest.xml</li>
+<li>MyApp.exe.deploy</li>
+<li>MyLib.dll.deploy</li>
+<li>deltas
+
+<ul>
+<li>MyApp.exe.F872A.deploy</li>
+<li>MyLib.dll.B89C0.deploy</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul><h2>Application Code</h2>
+
+<p>You can use the following code to check for updates every hour. The update procedure will be executed automatically.</p>
+
+<div class="highlight">
+<pre><span class="n">AutoUpdater</span> <span class="n">autoUpdater</span> <span class="p">=</span> <span class="k">new</span> <span class="n">AutoUpdater</span><span class="p">(</span><span class="n">UpdateManager</span><span class="p">.</span><span class="n">Default</span><span class="p">);</span>
+<span class="n">autoUpdater</span><span class="p">.</span><span class="n">SecondsBetweenChecks</span> <span class="p">=</span> <span class="m">3600</span><span class="p">;</span>
+<span class="n">autoUpdater</span><span class="p">.</span><span class="n">Start</span><span class="p">();</span>
+</pre>
+</div>
+
+
+<p>You can also subscribe to the event <code>Updated</code> in order to be notified when an update has been made.</p>
+
+<h2>Update process and deltas</h2>
+
+<p>The update process will download only the new files and those which were changed.
+The files that weren't changed between versions will just be copied from the old version.</p>
+
+<p>If a file was modified, the update process will check if there is a delta available. 
+If there is one, it will use the delta instead of downloading the entire file.</p>
+
+<p>In a normal update, only new files and the deltas will be downloaded. That means the update size will be very small.</p>
+
+<h2>Publishing a version</h2>
+
+<p>To publish a version to the update server you must use the <strong>AppUpdater.Publisher</strong> utility. 
+It publishes the files to a defined directory; this directory must be served by a web server. 
+Right now, the utility can't publish directly to a web server, just to a directory.</p>
+
+<p>The usage of the publisher is as follow:</p>
+
+<pre><code>AppUpdate.Publisher.exe -source:source_dir -target:target_dir -deltas:2 -version:1.0.0
+</code></pre>
+
+<p>The <strong>"source"</strong> argument defines the directory containing the new version files. The <strong>"target"</strong> defines the directory of the update server. 
+And <strong>"version"</strong> defines the number of the new version. 
+The <strong>"deltas"</strong> argument is optional; if defined, the publisher will generate deltas for older versions. The number of old versions is defined in this argument.</p>
+
+<p>If, for example, you define the <strong>"deltas"</strong> argument as <strong>"10"</strong>, the publisher will generate deltas for the last 10 versions. 
+It means that if a client is 10 versions behind the current one, it can use the delta instead of downloading the entire file.</p>
+
+<p>If the application is constantly executed, the user will probably have the latest version. 
+If it is used less frequently, it can have an older version, in that case it's a good idea to generate deltas for as many versions as you think would be needed.</p>
+
+<h2>Limitations</h2>
+
+<p>Right now, the application can't be installed in the <em>"Program Files"</em> directory. 
+Applications don't have permissions to write to the <em>"Program Files"</em> directory, which would keep the update process from being executed.</p>
+
+<h2>Creating a setup</h2>
+
+<p>To create a setup:</p>
+
+<ol>
+<li>do not install on the <em>Program Files</em> folder (see above);</li>
+<li>define the version as 0.0.0 (or something like that) in the <em>config.xml</em>;</li>
+<li>install the app in the folder corresponding to the version (in this example, it would be 0.0.0);</li>
+<li>define the update server url in the <em>config.xml</em>.</li>
+</ol><p>There is no problem in defining a version that doesn't exist. 
+On the first run, the application will check for updates, will see a different version number and execute the update procedure. 
+If the files in the latest version are equals to the files in the setup, they will just be copied to the new folder. No files will be downloaded.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">AppUpdater maintained by <a href="https://github.com/diogomafra">diogomafra</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
