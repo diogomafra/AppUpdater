@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algo.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,6 +78,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AppUpdater.Service\AppUpdater.Service.csproj">
+      <Project>{f47ae386-31be-4b84-a20b-a1c9da90f36c}</Project>
+      <Name>AppUpdater.Service</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AppUpdater\AppUpdater.csproj">
       <Project>{AC95E782-8C9F-4381-A043-6D8A65806743}</Project>
       <Name>AppUpdater</Name>
