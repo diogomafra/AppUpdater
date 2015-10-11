@@ -64,6 +64,11 @@ namespace AppUpdater.ServiceRunner
             string version = GetConfigValue(doc, "version");
             string lastVersion = GetConfigValue(doc, "last_version");
             string executable = GetConfigValue(doc, "executable");
+            string customBaseDir = GetConfigValue(doc, "base_directory");
+            if (!String.IsNullOrEmpty(customBaseDir))
+            {
+                baseDir = customBaseDir;
+            }
 
             string servicePath = Path.Combine(baseDir, version, executable);
             return servicePath;
