@@ -11,7 +11,7 @@ namespace AppUpdater.ServiceRunner
         private AppDomain appDomain;
         private ServiceInsideAppDomainProxy serviceProxy;
 
-        public Runner() : this(null)
+        public Runner() : this(GetServiceAssemblyFilename())
         {
         }
 
@@ -22,16 +22,10 @@ namespace AppUpdater.ServiceRunner
 
         public void Start()
         {
-            var assemblyFilename = serviceAssemblyFilename;
-            if (assemblyFilename == null)
-            {
-                assemblyFilename = GetServiceAssemblyFilename();
-            }
-
             appDomain = CreateAppDomain();
             var serviceProxyType = typeof(ServiceInsideAppDomainProxy);
             serviceProxy = (ServiceInsideAppDomainProxy)appDomain.CreateInstanceFromAndUnwrap(serviceProxyType.Assembly.Location, serviceProxyType.FullName);
-            serviceProxy.LoadService(assemblyFilename);
+            serviceProxy.LoadService(serviceAssemblyFilename);
             serviceProxy.Start();
         }
 
