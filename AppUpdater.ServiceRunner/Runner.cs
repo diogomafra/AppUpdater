@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Xml;
 
 namespace AppUpdater.ServiceRunner
 {
@@ -11,8 +10,10 @@ namespace AppUpdater.ServiceRunner
         private AppDomain appDomain;
         private ServiceInsideAppDomainProxy serviceProxy;
 
-        public Runner() : this(GetServiceAssemblyFilename())
+        public Runner()
         {
+            var baseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            this.serviceAssemblyFilename = GetServiceAssemblyFilename(baseDirectory);
         }
 
         public Runner(string serviceAssemblyFilename)
@@ -35,7 +36,6 @@ namespace AppUpdater.ServiceRunner
             {
                 serviceProxy.Stop();
                 serviceProxy = null;
-                AppDomain.Unload(appDomain);
                 appDomain = null;
             }
         }
@@ -48,30 +48,10 @@ namespace AppUpdater.ServiceRunner
             return appDomain;
         }
 
-        private static string GetServiceAssemblyFilename()
+        private static string GetServiceAssemblyFilename(string baseDirectory)
         {
-            var baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var configFilename = Path.Combine(baseDir, "config.xml");
-            var doc = new XmlDocument();
-            doc.Load(configFilename);
-
-            string version = GetConfigValue(doc, "version");
-            string lastVersion = GetConfigValue(doc, "last_version");
-            string executable = GetConfigValue(doc, "executable");
-            string customBaseDir = GetConfigValue(doc, "base_directory");
-            if (!String.IsNullOrEmpty(customBaseDir))
-            {
-                baseDir = customBaseDir;
-            }
-
-            string servicePath = Path.Combine(baseDir, version, executable);
-            return servicePath;
-        }
-
-        private static string GetConfigValue(XmlDocument doc, string name)
-        {
-            var node = doc.SelectSingleNode("config/" + name);
-            return node == null ? null : node.InnerText;
+            var configInfo = ConfigLoader.LoadConfig(baseDirectory);
+            return Path.Combine(configInfo.BaseDirectory, configInfo.Version, configInfo.Executable);
         }
     }
 }

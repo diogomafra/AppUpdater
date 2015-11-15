@@ -10,21 +10,10 @@ namespace AppUpdater.Runner
     {
         static void Main(string[] args)
         {
-            string dir = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-            XmlDocument doc = new XmlDocument();
-            doc.Load(Path.Combine(dir, "config.xml"));
-
-            string version = GetConfigValue(doc, "version");
-            string lastVersion = GetConfigValue(doc, "last_version");
-            string executable = GetConfigValue(doc, "executable");
-            string customBaseDir = GetConfigValue(doc, "base_directory");
-            if (!String.IsNullOrEmpty(customBaseDir))
-            {
-                dir = customBaseDir;
-            }
+            var configInfo = ConfigLoader.LoadConfig(Path.GetDirectoryName(typeof(Program).Assembly.Location));
 
             bool runLast = args.Any(x => x.Equals("-last", StringComparison.CurrentCultureIgnoreCase));
-            if (runLast && lastVersion == null)
+            if (runLast && configInfo.LastVersion == null)
             {
                 Console.WriteLine("Last version is not defined.");
                 runLast = false;
@@ -32,18 +21,12 @@ namespace AppUpdater.Runner
 
             if (runLast)
             {
-                ExecuteApplication(dir, lastVersion, executable, args);
+                ExecuteApplication(configInfo.BaseDirectory, configInfo.LastVersion, configInfo.Executable, args);
             }
             else
             {
-                ExecuteApplication(dir, version, executable, args);
+                ExecuteApplication(configInfo.BaseDirectory, configInfo.Version, configInfo.Executable, args);
             }
-        }
-
-        private static string GetConfigValue(XmlDocument doc, string name)
-        {
-            var node = doc.SelectSingleNode("config/" + name);
-            return node == null ? null : node.InnerText;
         }
 
         private static void ExecuteApplication(string baseDir, string version, string executable, string[] args)
