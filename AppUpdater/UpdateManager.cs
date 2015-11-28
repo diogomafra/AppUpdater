@@ -82,7 +82,7 @@ namespace AppUpdater
             {
                 try
                 {
-                    localStructureManager.DeleteVersionDir(version);
+                    //localStructureManager.DeleteVersionDir(version);
                 }
                 catch (Exception err)
                 {
